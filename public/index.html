@@ -988,7 +988,21 @@ function spinWheel() {
   setTimeout(function() {
     var resultDiv = document.getElementById('spinResult');
     var resultText = document.getElementById('spinResultText');
-    resultText.textContent = '🎉 Tahniah! Anda mendapat: ' + spinResult + '!';
+
+    // Map prize to emoji for a more exciting result display
+    var prizeEmoji = {
+      'Hadiah Umrah': '🕌',
+      'Wang Tunai': '💰',
+      'Kereta': '🚗',
+      'Motor': '🏍️',
+      'Pakej Modal Perniagaan': '🏪'
+    };
+    var emoji = prizeEmoji[spinResult] || '🎁';
+
+    resultText.innerHTML = '<div style="font-size: 2.2rem; margin-bottom: 8px;">' + emoji + '</div>' +
+      '<div style="font-size: 1.3rem; font-weight: 800; color: #4a3c2a;">Tahniah!</div>' +
+      '<div style="font-size: 1.1rem; color: #8a7a5a; margin-top: 4px;">Anda mendapat:</div>' +
+      '<div style="font-size: 1.5rem; font-weight: 800; color: #b8941f; margin-top: 6px;">' + spinResult + '</div>';
     resultDiv.classList.add('show');
 
     var nama = document.getElementById('nama').value.trim();
