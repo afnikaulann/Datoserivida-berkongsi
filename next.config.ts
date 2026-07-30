@@ -1,7 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async rewrites() {
+    return {
+      beforeFiles: [
+        // Serve the static giveaway landing page at the root URL
+        { source: "/", destination: "/index.html" },
+      ],
+    };
+  },
 };
 
 export default nextConfig;
