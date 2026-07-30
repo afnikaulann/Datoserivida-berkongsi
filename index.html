@@ -389,13 +389,14 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 115px;
+      width: 110px;
       text-align: center;
-      transform: translate(-50%, -50%);
+      transform-origin: 0 0;
+      transform: rotate(var(--angle)) translateX(var(--wheel-radius)) translate(-50%, -50%);
       color: #4a3c2a;
-      font-size: 15px;
+      font-size: 18px;
       font-weight: 800;
-      line-height: 1.25;
+      line-height: 1.15;
       word-wrap: break-word;
       white-space: normal;
       text-shadow: 0 1px 2px rgba(255,255,255,0.7);
@@ -640,7 +641,7 @@
       .testi-grid { grid-template-columns: 1fr 1fr; }
       .stat-cards { flex-direction: column; align-items: center; }
       .wheel-container { width: 360px; height: 360px; --wheel-radius: 105px; }
-      .wheel-label { width: 95px !important; font-size: 13px !important; }
+      .wheel-label { width: 90px !important; font-size: 15px !important; line-height: 1.15 !important; transform: rotate(var(--angle)) translateX(var(--wheel-radius)) translate(-50%, -50%) !important; }
     }
   </style>
 </head>
@@ -923,18 +924,11 @@ var isSpinning = false;
   gradient += ')';
   wheel.style.background = gradient;
 
-  // Add labels at the center of each segment (horizontal text)
-  var wheelContainer = document.querySelector('.wheel-container');
-  var radius = parseFloat(getComputedStyle(wheelContainer).getPropertyValue('--wheel-radius'));
+  // Add labels (tilted/radial, centered in each segment)
   for (var j = 0; j < spinPrizes.length; j++) {
-    var angleDeg = j * segmentAngle + segmentAngle / 2;
-    var angleRad = angleDeg * Math.PI / 180;
-    var x = radius * Math.cos(angleRad);
-    var y = radius * Math.sin(angleRad);
-
     var label = document.createElement('div');
     label.className = 'wheel-label';
-    label.style.transform = 'translate(-50%, -50%) translate(' + x + 'px, ' + y + 'px)';
+    label.style.setProperty('--angle', (j * segmentAngle + segmentAngle / 2) + 'deg');
     label.textContent = spinPrizes[j];
     wheel.appendChild(label);
   }
