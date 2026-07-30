@@ -346,7 +346,7 @@
 
     .wheel-container {
       position: relative;
-      width: 300px; height: 300px;
+      width: 320px; height: 320px;
       margin: 0 auto 24px;
     }
     .wheel {
@@ -356,6 +356,7 @@
       position: relative;
       transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
       box-shadow: 0 0 30px rgba(212,175,55,0.3);
+      overflow: hidden;
     }
     .wheel-pointer {
       position: absolute;
@@ -619,6 +620,7 @@
       .profile-photo-wrap { width: 120px; height: 120px; }
       .testi-grid { grid-template-columns: 1fr 1fr; }
       .stat-cards { flex-direction: column; align-items: center; }
+      .wheel-container { width: 260px; height: 260px; }
     }
   </style>
 </head>
@@ -907,13 +909,18 @@ var isSpinning = false;
     label.style.position = 'absolute';
     label.style.top = '50%';
     label.style.left = '50%';
+    label.style.width = '90px';
+    label.style.textAlign = 'center';
     label.style.transformOrigin = '0 0';
-    label.style.transform = 'rotate(' + (j * segmentAngle + segmentAngle / 2) + 'deg) translateX(35px)';
+    label.style.transform = 'rotate(' + (j * segmentAngle + segmentAngle / 2) + 'deg) translateX(50px)';
     label.style.color = '#4a3c2a';
-    label.style.fontSize = '10px';
+    label.style.fontSize = '9px';
     label.style.fontWeight = 'bold';
-    label.style.whiteSpace = 'nowrap';
-    label.style.textShadow = '0 1px 2px rgba(255,255,255,0.5)';
+    label.style.lineHeight = '1.2';
+    label.style.wordWrap = 'break-word';
+    label.style.whiteSpace = 'normal';
+    label.style.textShadow = '0 1px 2px rgba(255,255,255,0.6)';
+    label.style.zIndex = '2';
     label.textContent = spinPrizes[j];
     wheel.appendChild(label);
   }
