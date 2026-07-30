@@ -391,8 +391,7 @@
       left: 50%;
       width: 120px;
       text-align: center;
-      transform-origin: 0 0;
-      transform: rotate(var(--angle)) translateX(var(--wheel-radius)) translate(-50%, -50%);
+      transform: translate(-50%, -50%);
       color: #4a3c2a;
       font-size: 16px;
       font-weight: 800;
@@ -640,7 +639,7 @@
       .profile-photo-wrap { width: 120px; height: 120px; }
       .testi-grid { grid-template-columns: 1fr 1fr; }
       .stat-cards { flex-direction: column; align-items: center; }
-      .wheel-container { width: 340px; height: 340px; --wheel-radius: 105px; }
+      .wheel-container { width: 340px; height: 340px; --wheel-radius: 100px; }
       .wheel-label { width: 100px !important; font-size: 13px !important; }
     }
   </style>
@@ -924,11 +923,17 @@ var isSpinning = false;
   gradient += ')';
   wheel.style.background = gradient;
 
-  // Add labels
+  // Add labels at the geometric center of each segment
+  var radius = parseFloat(getComputedStyle(document.querySelector('.wheel-container')).getPropertyValue('--wheel-radius'));
   for (var j = 0; j < spinPrizes.length; j++) {
+    var angleDeg = j * segmentAngle + segmentAngle / 2;
+    var angleRad = angleDeg * Math.PI / 180;
+    var x = radius * Math.cos(angleRad);
+    var y = radius * Math.sin(angleRad);
+
     var label = document.createElement('div');
     label.className = 'wheel-label';
-    label.style.setProperty('--angle', (j * segmentAngle + segmentAngle / 2) + 'deg');
+    label.style.transform = 'translate(-50%, -50%) translate(' + x + 'px, ' + y + 'px)';
     label.textContent = spinPrizes[j];
     wheel.appendChild(label);
   }
