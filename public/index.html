@@ -346,7 +346,7 @@
 
     .wheel-container {
       position: relative;
-      width: 320px; height: 320px;
+      width: 360px; height: 360px;
       margin: 0 auto 24px;
     }
     .wheel {
@@ -382,6 +382,24 @@
       align-items: center;
       justify-content: center;
       font-size: 22px;
+    }
+
+    .wheel-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100px;
+      text-align: center;
+      transform-origin: 0 0;
+      color: #4a3c2a;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.25;
+      word-wrap: break-word;
+      white-space: normal;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.7);
+      z-index: 2;
+      pointer-events: none;
     }
 
     .spin-btn {
@@ -620,7 +638,8 @@
       .profile-photo-wrap { width: 120px; height: 120px; }
       .testi-grid { grid-template-columns: 1fr 1fr; }
       .stat-cards { flex-direction: column; align-items: center; }
-      .wheel-container { width: 260px; height: 260px; }
+      .wheel-container { width: 280px; height: 280px; }
+      .wheel-label { width: 80px; font-size: 11px; transform: rotate(var(--angle)) translateX(75px) translate(-50%, -50%) !important; }
     }
   </style>
 </head>
@@ -906,21 +925,8 @@ var isSpinning = false;
   // Add labels
   for (var j = 0; j < spinPrizes.length; j++) {
     var label = document.createElement('div');
-    label.style.position = 'absolute';
-    label.style.top = '50%';
-    label.style.left = '50%';
-    label.style.width = '90px';
-    label.style.textAlign = 'center';
-    label.style.transformOrigin = '0 0';
-    label.style.transform = 'rotate(' + (j * segmentAngle + segmentAngle / 2) + 'deg) translateX(50px)';
-    label.style.color = '#4a3c2a';
-    label.style.fontSize = '9px';
-    label.style.fontWeight = 'bold';
-    label.style.lineHeight = '1.2';
-    label.style.wordWrap = 'break-word';
-    label.style.whiteSpace = 'normal';
-    label.style.textShadow = '0 1px 2px rgba(255,255,255,0.6)';
-    label.style.zIndex = '2';
+    label.className = 'wheel-label';
+    label.style.transform = 'rotate(' + (j * segmentAngle + segmentAngle / 2) + 'deg) translateX(95px) translate(-50%, -50%)';
     label.textContent = spinPrizes[j];
     wheel.appendChild(label);
   }
