@@ -736,22 +736,6 @@
         <textarea id="alamat" name="alamat" placeholder="Masukkan alamat penuh anda"></textarea>
         <div class="form-error" id="err-alamat">Alamat wajib diisi.</div>
       </div>
-      <div class="form-group">
-        <label for="tiktok">Akaun TikTok (pilihan)</label>
-        <input type="text" id="tiktok" name="tiktok" placeholder="@username_tiktok anda" />
-      </div>
-      <div class="form-group">
-        <label for="hadiah">Pilih Hadiah *</label>
-        <select id="hadiah" name="hadiah">
-          <option value="">-- Pilih Hadiah --</option>
-          <option value="Hadiah Umrah">🕌 Hadiah Umrah</option>
-          <option value="Wang Tunai">💰 Wang Tunai</option>
-          <option value="Kereta">🚗 Kereta</option>
-          <option value="Motor">🏍️ Motor</option>
-          <option value="Pakej Modal Perniagaan">🏪 Pakej Modal Perniagaan</option>
-        </select>
-        <div class="form-error" id="err-hadiah">Hadiah wajib dipilih.</div>
-      </div>
       <button type="submit" class="btn-primary" id="daftarBtn">Daftar & Terus Pusing</button>
     </form>
   </div>
@@ -940,14 +924,11 @@ function handleDaftar(e) {
 
   var nama = document.getElementById('nama').value.trim();
   var alamat = document.getElementById('alamat').value.trim();
-  var hadiah = document.getElementById('hadiah').value;
-  var tiktok = document.getElementById('tiktok').value.trim();
 
   var valid = true;
 
   document.getElementById('err-nama').classList.remove('show');
   document.getElementById('err-alamat').classList.remove('show');
-  document.getElementById('err-hadiah').classList.remove('show');
 
   if (!nama) {
     document.getElementById('err-nama').classList.add('show');
@@ -955,10 +936,6 @@ function handleDaftar(e) {
   }
   if (!alamat) {
     document.getElementById('err-alamat').classList.add('show');
-    valid = false;
-  }
-  if (!hadiah) {
-    document.getElementById('err-hadiah').classList.add('show');
     valid = false;
   }
 
@@ -994,14 +971,10 @@ function spinWheel() {
 
     var nama = document.getElementById('nama').value.trim();
     var alamat = document.getElementById('alamat').value.trim();
-    var tiktok = document.getElementById('tiktok').value.trim();
 
     var msg = '*DatoSeriVida Berkongsi — Pendaftaran Undian*\n\n';
     msg += 'Nama: ' + nama + '\n';
     msg += 'Alamat: ' + alamat + '\n';
-    if (tiktok) {
-      msg += 'TikTok: ' + tiktok + '\n';
-    }
     msg += 'Hadiah: ' + spinResult + '\n\n';
     msg += 'Mohon maklumat lanjut. Terima kasih! 🙏';
 
