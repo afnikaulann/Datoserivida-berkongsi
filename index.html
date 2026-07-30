@@ -346,8 +346,9 @@
 
     .wheel-container {
       position: relative;
-      width: 360px; height: 360px;
+      width: 420px; height: 420px;
       margin: 0 auto 24px;
+      --wheel-radius: 130px;
     }
     .wheel {
       width: 100%; height: 100%;
@@ -388,13 +389,14 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 100px;
+      width: 120px;
       text-align: center;
       transform-origin: 0 0;
+      transform: rotate(var(--angle)) translateX(var(--wheel-radius)) translate(-50%, -50%);
       color: #4a3c2a;
-      font-size: 13px;
+      font-size: 16px;
       font-weight: 800;
-      line-height: 1.25;
+      line-height: 1.2;
       word-wrap: break-word;
       white-space: normal;
       text-shadow: 0 1px 2px rgba(255,255,255,0.7);
@@ -638,8 +640,8 @@
       .profile-photo-wrap { width: 120px; height: 120px; }
       .testi-grid { grid-template-columns: 1fr 1fr; }
       .stat-cards { flex-direction: column; align-items: center; }
-      .wheel-container { width: 280px; height: 280px; }
-      .wheel-label { width: 80px !important; font-size: 11px !important; }
+      .wheel-container { width: 340px; height: 340px; --wheel-radius: 105px; }
+      .wheel-label { width: 100px !important; font-size: 13px !important; }
     }
   </style>
 </head>
@@ -926,7 +928,7 @@ var isSpinning = false;
   for (var j = 0; j < spinPrizes.length; j++) {
     var label = document.createElement('div');
     label.className = 'wheel-label';
-    label.style.transform = 'rotate(' + (j * segmentAngle + segmentAngle / 2) + 'deg) translateX(95px) translate(-50%, -50%)';
+    label.style.setProperty('--angle', (j * segmentAngle + segmentAngle / 2) + 'deg');
     label.textContent = spinPrizes[j];
     wheel.appendChild(label);
   }
