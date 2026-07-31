@@ -408,6 +408,30 @@
       pointer-events: none;
     }
 
+    .telegram-login-box {
+      max-width: 500px;
+      margin: 0 auto 24px;
+      padding: 24px;
+      background: #ffffff;
+      border: 2px solid #e8d5a0;
+      border-radius: 16px;
+      text-align: center;
+    }
+    .telegram-user-info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .telegram-user-info img {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid #d4af37;
+      object-fit: cover;
+    }
+
     .spin-btn {
       background: linear-gradient(135deg, #f0c75e, #d4af37);
       color: #4a3c2a;
@@ -753,6 +777,23 @@
     <div class="prize-tag">🏪 Pakej Modal Perniagaan</div>
   </div>
 
+  <!-- Telegram Login Widget -->
+  <div class="telegram-login-box" id="telegramLoginBox">
+    <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: #4a3c2a;">Log Masuk dengan Telegram</h3>
+    <p style="font-size: 0.95rem; color: #8a7a5a; margin-bottom: 16px;">Untuk pengesahan, sila log masuk dengan akaun Telegram anda.</p>
+    <div id="telegramWidgetContainer">
+      <!-- Ganti YOUR_BOT_USERNAME dengan username bot Telegram kamu -->
+      <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="YOUR_BOT_USERNAME" data-size="large" data-onauth="onTelegramAuth(user)" data-request-access="write"></script>
+    </div>
+    <div class="telegram-user-info" id="telegramUserInfo" style="display:none;">
+      <img id="telegramUserPhoto" src="" alt="Telegram" />
+      <div>
+        <div id="telegramUserName" style="font-weight: 700; color: #4a3c2a;"></div>
+        <div id="telegramUserHandle" style="font-size: 0.85rem; color: #8a7a5a;"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Form -->
   <div class="form-container">
     <form id="undianForm" onsubmit="return handleDaftar(event)">
@@ -760,11 +801,6 @@
         <label for="nama">Nama Penuh *</label>
         <input type="text" id="nama" name="nama" placeholder="Masukkan nama penuh anda" />
         <div class="form-error" id="err-nama">Nama wajib diisi.</div>
-      </div>
-      <div class="form-group">
-        <label for="telegram">Nombor Telegram / Username *</label>
-        <input type="text" id="telegram" name="telegram" placeholder="Contoh: @username atau 60123456789" />
-        <div class="form-error" id="err-telegram">Nombor Telegram wajib diisi.</div>
       </div>
       <div class="form-group">
         <label for="alamat">Alamat Penuh *</label>
@@ -919,6 +955,7 @@ var WA_NUMBER = "601153594110";
 var spinPrizes = ["Hadiah Umrah", "Wang Tunai", "Kereta", "Motor", "Pakej Modal Perniagaan"];
 var spinResult = null;
 var isSpinning = false;
+var telegramUser = null;
 
 // Build wheel segments (5 prizes)
 (function buildWheel() {
@@ -950,21 +987,15 @@ function handleDaftar(e) {
   e.preventDefault();
 
   var nama = document.getElementById('nama').value.trim();
-  var telegram = document.getElementById('telegram').value.trim();
   var alamat = document.getElementById('alamat').value.trim();
 
   var valid = true;
 
   document.getElementById('err-nama').classList.remove('show');
-  document.getElementById('err-telegram').classList.remove('show');
   document.getElementById('err-alamat').classList.remove('show');
 
   if (!nama) {
     document.getElementById('err-nama').classList.add('show');
-    valid = false;
-  }
-  if (!telegram) {
-    document.getElementById('err-telegram').classList.add('show');
     valid = false;
   }
   if (!alamat) {
@@ -999,7 +1030,6 @@ function spinWheel() {
   setTimeout(function() {
     var nama = document.getElementById('nama').value.trim();
     var alamat = document.getElementById('alamat').value.trim();
-    var telegram = document.getElementById('telegram').value.trim();
 
     var resultDiv = document.getElementById('spinResult');
     var resultText = document.getElementById('spinResultText');
@@ -1022,8 +1052,12 @@ function spinWheel() {
 
     var msg = '*DatoSeriVida Berkongsi — Pendaftaran Undian*\n\n';
     msg += 'Nama: ' + nama + '\n';
-    msg += 'Telegram: ' + telegram + '\n';
     msg += 'Alamat: ' + alamat + '\n';
+    if (telegramUser && telegramUser.username) {
+      msg += 'Telegram: @' + telegramUser.username + '\n';
+    } else if (telegramUser && telegramUser.id) {
+      msg += 'Telegram ID: ' + telegramUser.id + '\n';
+    }
     msg += 'Hadiah: ' + spinResult + '\n\n';
     msg += 'Mohon maklumat lanjut. Terima kasih! 🙏';
 
@@ -1035,6 +1069,30 @@ function spinWheel() {
   }, 4200);
 }
 
+
+// Telegram Login Widget callback
+function onTelegramAuth(user) {
+  telegramUser = user;
+
+  // Hide widget and show user info
+  document.getElementById('telegramWidgetContainer').style.display = 'none';
+  var infoBox = document.getElementById('telegramUserInfo');
+  infoBox.style.display = 'flex';
+
+  var displayName = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+  document.getElementById('telegramUserName').textContent = displayName;
+  document.getElementById('telegramUserHandle').textContent = user.username ? '@' + user.username : 'ID: ' + user.id;
+
+  if (user.photo_url) {
+    document.getElementById('telegramUserPhoto').src = user.photo_url;
+  }
+
+  // Auto-fill name field if empty
+  var namaInput = document.getElementById('nama');
+  if (namaInput && !namaInput.value.trim()) {
+    namaInput.value = displayName;
+  }
+}
 
 /* ============================================================
    KUIZ SERONOK
@@ -1177,9 +1235,10 @@ function showQuizResult() {
   document.getElementById('proofList').innerHTML = proofHtml;
 
   var msg = '*DatoSeriVida Berkongsi — Bukti Kuiz*\n\n';
-  var telegramInput = document.getElementById('telegram');
-  if (telegramInput && telegramInput.value.trim()) {
-    msg += 'Telegram: ' + telegramInput.value.trim() + '\n';
+  if (telegramUser && telegramUser.username) {
+    msg += 'Telegram: @' + telegramUser.username + '\n';
+  } else if (telegramUser && telegramUser.id) {
+    msg += 'Telegram ID: ' + telegramUser.id + '\n';
   }
   msg += 'Skor: ' + quizScore + '/' + quizData.length + '\n\n';
   msg += 'Butiran Jawapan:\n';
