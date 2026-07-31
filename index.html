@@ -408,30 +408,6 @@
       pointer-events: none;
     }
 
-    .telegram-login-box {
-      max-width: 500px;
-      margin: 0 auto 24px;
-      padding: 24px;
-      background: #ffffff;
-      border: 2px solid #e8d5a0;
-      border-radius: 16px;
-      text-align: center;
-    }
-    .telegram-user-info {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin-top: 16px;
-    }
-    .telegram-user-info img {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      border: 2px solid #d4af37;
-      object-fit: cover;
-    }
-
     .spin-btn {
       background: linear-gradient(135deg, #f0c75e, #d4af37);
       color: #4a3c2a;
@@ -441,6 +417,78 @@
       border-radius: 50px;
       box-shadow: 0 4px 15px rgba(212,175,55,0.4);
       transition: transform 0.2s;
+    }
+
+    .telegram-otp-box {
+      max-width: 500px;
+      margin: 0 auto 24px;
+      padding: 24px;
+      background: #ffffff;
+      border: 2px solid #e8d5a0;
+      border-radius: 16px;
+      text-align: center;
+    }
+    .otp-input-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .otp-input-row input {
+      flex: 1;
+      min-width: 180px;
+      max-width: 220px;
+      padding: 12px 16px;
+      border: 2px solid #e8d5a0;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      letter-spacing: 4px;
+      text-align: center;
+      color: #4a3c2a;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .otp-input-row input:focus {
+      border-color: #d4af37;
+    }
+    .btn-verify-otp {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #f0c75e, #d4af37);
+      color: #4a3c2a;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s;
+      white-space: nowrap;
+    }
+    .btn-verify-otp:hover {
+      transform: scale(1.05);
+    }
+    .btn-verify-otp:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .otp-status {
+      margin-top: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .otp-status.success {
+      color: #2e7d32;
+    }
+    .otp-status.error {
+      color: #c62828;
+    }
+    .otp-status.loading {
+      color: #8a7a5a;
+    }
+    #daftarBtn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    #err-otp {
+      display: none;
     }
     .spin-btn:hover { transform: scale(1.05); }
     .spin-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
@@ -777,21 +825,19 @@
     <div class="prize-tag">🏪 Pakej Modal Perniagaan</div>
   </div>
 
-  <!-- Telegram Login Widget -->
-  <div class="telegram-login-box" id="telegramLoginBox">
-    <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: #4a3c2a;">Log Masuk dengan Telegram</h3>
-    <p style="font-size: 0.95rem; color: #8a7a5a; margin-bottom: 16px;">Untuk pengesahan, sila log masuk dengan akaun Telegram anda.</p>
-    <div id="telegramWidgetContainer">
-      <!-- Ganti YOUR_BOT_USERNAME dengan username bot Telegram kamu -->
-      <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="YOUR_BOT_USERNAME" data-size="large" data-onauth="onTelegramAuth(user)" data-request-access="write"></script>
+  <!-- Telegram OTP Verification -->
+  <div class="telegram-otp-box" id="telegramOtpBox">
+    <h3 style="font-size: 1.1rem; margin-bottom: 8px; color: #4a3c2a;">Pengesahan Telegram OTP</h3>
+    <p style="font-size: 0.9rem; color: #8a7a5a; margin-bottom: 16px;">
+      1. Buka bot <a href="https://t.me/DatoserividaOtpBot" target="_blank" style="color: #d4af37; font-weight: 700;">@DatoserividaOtpBot</a> di Telegram<br>
+      2. Ketik <strong>/start</strong> untuk dapatkan kod OTP<br>
+      3. Masukkan kod OTP di bawah
+    </p>
+    <div class="otp-input-row">
+      <input type="text" id="otpCode" name="otpCode" placeholder="Masukkan kod OTP 6 digit" maxlength="6" inputmode="numeric" />
+      <button type="button" class="btn-verify-otp" id="verifyOtpBtn" onclick="verifyOTP()">Sahkan</button>
     </div>
-    <div class="telegram-user-info" id="telegramUserInfo" style="display:none;">
-      <img id="telegramUserPhoto" src="" alt="Telegram" />
-      <div>
-        <div id="telegramUserName" style="font-weight: 700; color: #4a3c2a;"></div>
-        <div id="telegramUserHandle" style="font-size: 0.85rem; color: #8a7a5a;"></div>
-      </div>
-    </div>
+    <div class="otp-status" id="otpStatus"></div>
   </div>
 
   <!-- Form -->
@@ -803,11 +849,17 @@
         <div class="form-error" id="err-nama">Nama wajib diisi.</div>
       </div>
       <div class="form-group">
+        <label for="telegram">Nombor Telegram / Username *</label>
+        <input type="text" id="telegram" name="telegram" placeholder="Contoh: @username atau 60123456789" />
+        <div class="form-error" id="err-telegram">Nombor Telegram wajib diisi.</div>
+      </div>
+      <div class="form-group">
         <label for="alamat">Alamat Penuh *</label>
         <textarea id="alamat" name="alamat" placeholder="Masukkan alamat penuh anda"></textarea>
         <div class="form-error" id="err-alamat">Alamat wajib diisi.</div>
       </div>
-      <button type="submit" class="btn-primary" id="daftarBtn">Daftar & Terus Pusing</button>
+      <button type="submit" class="btn-primary" id="daftarBtn" disabled>Daftar & Terus Pusing</button>
+      <div class="form-error" id="err-otp" style="margin-top: 8px;">Sila sahkan kod OTP dahulu sebelum mendaftar.</div>
     </form>
   </div>
 
@@ -955,7 +1007,7 @@ var WA_NUMBER = "601153594110";
 var spinPrizes = ["Hadiah Umrah", "Wang Tunai", "Kereta", "Motor", "Pakej Modal Perniagaan"];
 var spinResult = null;
 var isSpinning = false;
-var telegramUser = null;
+var otpVerified = false;
 
 // Build wheel segments (5 prizes)
 (function buildWheel() {
@@ -987,19 +1039,30 @@ function handleDaftar(e) {
   e.preventDefault();
 
   var nama = document.getElementById('nama').value.trim();
+  var telegram = document.getElementById('telegram').value.trim();
   var alamat = document.getElementById('alamat').value.trim();
 
   var valid = true;
 
   document.getElementById('err-nama').classList.remove('show');
+  document.getElementById('err-telegram').classList.remove('show');
   document.getElementById('err-alamat').classList.remove('show');
+  document.getElementById('err-otp').classList.remove('show');
 
   if (!nama) {
     document.getElementById('err-nama').classList.add('show');
     valid = false;
   }
+  if (!telegram) {
+    document.getElementById('err-telegram').classList.add('show');
+    valid = false;
+  }
   if (!alamat) {
     document.getElementById('err-alamat').classList.add('show');
+    valid = false;
+  }
+  if (!otpVerified) {
+    document.getElementById('err-otp').classList.add('show');
     valid = false;
   }
 
@@ -1029,6 +1092,7 @@ function spinWheel() {
 
   setTimeout(function() {
     var nama = document.getElementById('nama').value.trim();
+    var telegram = document.getElementById('telegram').value.trim();
     var alamat = document.getElementById('alamat').value.trim();
 
     var resultDiv = document.getElementById('spinResult');
@@ -1052,12 +1116,8 @@ function spinWheel() {
 
     var msg = '*DatoSeriVida Berkongsi — Pendaftaran Undian*\n\n';
     msg += 'Nama: ' + nama + '\n';
+    msg += 'Telegram: ' + telegram + '\n';
     msg += 'Alamat: ' + alamat + '\n';
-    if (telegramUser && telegramUser.username) {
-      msg += 'Telegram: @' + telegramUser.username + '\n';
-    } else if (telegramUser && telegramUser.id) {
-      msg += 'Telegram ID: ' + telegramUser.id + '\n';
-    }
     msg += 'Hadiah: ' + spinResult + '\n\n';
     msg += 'Mohon maklumat lanjut. Terima kasih! 🙏';
 
@@ -1070,28 +1130,48 @@ function spinWheel() {
 }
 
 
-// Telegram Login Widget callback
-function onTelegramAuth(user) {
-  telegramUser = user;
+// Telegram OTP Verification
+function verifyOTP() {
+  var otpCode = document.getElementById('otpCode').value.trim();
+  var statusDiv = document.getElementById('otpStatus');
+  var verifyBtn = document.getElementById('verifyOtpBtn');
 
-  // Hide widget and show user info
-  document.getElementById('telegramWidgetContainer').style.display = 'none';
-  var infoBox = document.getElementById('telegramUserInfo');
-  infoBox.style.display = 'flex';
-
-  var displayName = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-  document.getElementById('telegramUserName').textContent = displayName;
-  document.getElementById('telegramUserHandle').textContent = user.username ? '@' + user.username : 'ID: ' + user.id;
-
-  if (user.photo_url) {
-    document.getElementById('telegramUserPhoto').src = user.photo_url;
+  if (!otpCode || otpCode.length !== 6) {
+    statusDiv.className = 'otp-status error';
+    statusDiv.textContent = 'Sila masukkan kod OTP 6 digit.';
+    return;
   }
 
-  // Auto-fill name field if empty
-  var namaInput = document.getElementById('nama');
-  if (namaInput && !namaInput.value.trim()) {
-    namaInput.value = displayName;
-  }
+  statusDiv.className = 'otp-status loading';
+  statusDiv.textContent = 'Sedang menyahkan...';
+  verifyBtn.disabled = true;
+
+  fetch('/api/verify-otp', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ otp: otpCode })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.success) {
+      otpVerified = true;
+      statusDiv.className = 'otp-status success';
+      statusDiv.innerHTML = '✅ Pengesahan berjaya! Anda boleh mendaftar sekarang.';
+      document.getElementById('daftarBtn').disabled = false;
+      document.getElementById('err-otp').classList.remove('show');
+      verifyBtn.disabled = true;
+      document.getElementById('otpCode').disabled = true;
+    } else {
+      statusDiv.className = 'otp-status error';
+      statusDiv.textContent = '❌ ' + data.message;
+      verifyBtn.disabled = false;
+    }
+  })
+  .catch(function(err) {
+    statusDiv.className = 'otp-status error';
+    statusDiv.textContent = '❌ Ralat sistem. Sila cuba lagi.';
+    verifyBtn.disabled = false;
+  });
 }
 
 /* ============================================================
@@ -1235,10 +1315,9 @@ function showQuizResult() {
   document.getElementById('proofList').innerHTML = proofHtml;
 
   var msg = '*DatoSeriVida Berkongsi — Bukti Kuiz*\n\n';
-  if (telegramUser && telegramUser.username) {
-    msg += 'Telegram: @' + telegramUser.username + '\n';
-  } else if (telegramUser && telegramUser.id) {
-    msg += 'Telegram ID: ' + telegramUser.id + '\n';
+  var telegramInput = document.getElementById('telegram');
+  if (telegramInput && telegramInput.value.trim()) {
+    msg += 'Telegram: ' + telegramInput.value.trim() + '\n';
   }
   msg += 'Skor: ' + quizScore + '/' + quizData.length + '\n\n';
   msg += 'Butiran Jawapan:\n';
