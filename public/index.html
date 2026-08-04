@@ -393,19 +393,24 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 120px;
+      width: 83px;
       text-align: center;
       transform-origin: 0 0;
       transform: rotate(var(--angle)) translateX(var(--wheel-radius)) translate(-50%, -50%);
+      z-index: 2;
+      pointer-events: none;
+    }
+    .wheel-label span {
+      display: inline-block;
       color: #4a3c2a;
-      font-size: 17px;
+      font-size: 15px;
       font-weight: 800;
-      line-height: 1.15;
+      line-height: 1.25;
       word-wrap: break-word;
       white-space: normal;
       text-shadow: 0 1px 2px rgba(255,255,255,0.7);
-      z-index: 2;
-      pointer-events: none;
+      transform: rotate(calc(-1 * var(--angle)));
+      transform-origin: center;
     }
 
     .spin-btn {
@@ -937,7 +942,9 @@ var isSpinning = false;
     var label = document.createElement('div');
     label.className = 'wheel-label';
     label.style.setProperty('--angle', (j * segmentAngle + segmentAngle / 2) + 'deg');
-    label.textContent = spinPrizes[j];
+    var span = document.createElement('span');
+    span.textContent = spinPrizes[j];
+    label.appendChild(span);
     wheel.appendChild(label);
   }
 })();
@@ -993,6 +1000,7 @@ function spinWheel() {
     var resultDiv = document.getElementById('spinResult');
     var resultText = document.getElementById('spinResultText');
 
+    // Map prize to emoji for a more exciting result display
     // Map prize to emoji for a more exciting result display
     var prizeEmoji = {
       'Hadiah Umrah': '🕌',
